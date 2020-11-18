@@ -3,21 +3,18 @@
 #include <linux/moduleparam.h>
 #include <linux/printk.h>
 
-#include <linux/types.h>
 
 MODULE_AUTHOR("Andrukhovych Mykola IO-81");
 MODULE_DESCRIPTION("Hello world printing Linux module for lab5");
 MODULE_LICENSE("Dual BSD/GPL");
 
 static int amount = 1;
-module_param(amount, uint, 0);
+module_param(amount, uint, S_IRUGO);
 MODULE_PARM_DESC(times, "Amount of outputting Hello worlds");
 
 static int __init thisinit(void)
 {
   uint i = 0;
-
-  printk(KERN_INFO "Amount: %d\n", amount);
 
   if(amount == 0)
   {
@@ -29,7 +26,7 @@ static int __init thisinit(void)
   } 
   else if(amount > 10)
   {
-    printk(KERN_ERR "Entered parameter is bigger tham 10");
+    printk(KERN_ERR "Entered parameter is bigger than 10");
     return -EINVAL;
   }
 
@@ -37,6 +34,9 @@ static int __init thisinit(void)
   {
     printk(KERN_EMERG "Hello, world!\n");
   }
+
+  printk(KERN_INFO "Amount: %d\n", amount);
+
   return 0;
 }
 
