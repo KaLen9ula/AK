@@ -63,36 +63,34 @@ task1:
 // Result correction
 
 result_correction:
-    push {lr}
-    bvc step2
-    lsr r0, #1
-    lsr r1, #1
+step1:
+  bvc step2
+  lsrs r1, #1
+  rrx r0, r0
 
 step2:
-    orr r0, #0
-    bne step4
-    orr r1, #0
-    bne step4
-    mov r0, #0b10100101
+  cmp r1, 0
+
+step3:
+  ITT EQ
+  movEQ r0, #8101
+  lslEQ r0, r0, #19
 
 step4:
-    add r1, #0b10100101
-    and r5, r1, #0xc0000000
-    beq step7
-    eor r5, #0xc0000000
-    beq step7
-    lsr r0, #1
-    lsr r1, #1
+  mov r7, #8101
+  add r1, r7
+
+step5:
+  and r3, r0, #0xC0000000
+  cmp r3, #0x80000000
+
+step6:
+  ITT EQ
+  asrEQ r1, r1, #1
+  asrEQ r0, r0, #1
 
 step7:
-    bvs end_correction
-    push {r0}
-    push {r1}
-    pop {r1}
-    pop {r0}
-
-end_correction:
-    pop {pc}
+  pop {pc}
 
 task2:
 	push {lr}
@@ -103,34 +101,39 @@ prog_a:
 	mov r0, #5
 	add r0, r1, r0
 	bl prog_b
-l3:
-	lsl r1, #1
-	bcc l1
-	lsr r0, #1
-	b l2
-l1:
+
+jmp3:
+	lsls r1, #1
+	bcs jmp1
+	lsls r0, #1
+	b jmp2
+
+jmp1:
 	add r0, #7
-	sub r1, r0
-l2:
-	bvc l3
-	lsl r0, r1
+	subs r1, r0
+    
+jmp2:
+	bvs jmp3
+	lsl r0, #2
 	pop {pc}
 
 prog_b:
 	push {lr}
-l5:
-	sub r2, #2
-	bne l4
+
+jmp5:
+	subs r2, #2
+	bmi jmp4
 	bl prog_c
-	add r2, r1
-l4:
-	bcc l5
-	sub r2, r0
-	lsr r1, r0
+	adds r2, r1
+
+jmp4:
+	bcs jmp5
+	add r2, r0
+	lsr r1, #2
 	pop {pc}
 
 prog_c:
 	push {lr}
-	mov r2 = r2
+	mov r2, r2
 	mov r1, #54
 	pop {pc}
